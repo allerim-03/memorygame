@@ -53,3 +53,52 @@ ela cria um servidor local, e reload automático
 
 ---
 
+Data (12/06/2026)
+
+Melhorias implementadas :
+Correção dos botões
+Corrigido o botão Jogar Novamente.
+Corrigido o botão Voltar.
+
+Ajustado o carregamento do JavaScript para evitar erros de elementos inexistentes no DOM.
+Sistema de Vitória
+Implementada a verificação automática de vitória.
+Exibição de mensagem de parabéns ao concluir todas as combinações.
+Inclusão de botão para reiniciar a partida após a vitória.
+
+Sistema de Pontuação
+Adicionada pontuação por pares encontrados.
+Exibição da pontuação atual durante a partida.
+
+Cronômetro
+Implementado cronômetro iniciado na primeira jogada.
+Parada automática do cronômetro ao vencer.
+
+Ranking
+Implementado armazenamento de melhor resultado utilizando Local Storage.
+Registro da melhor pontuação e do melhor tempo.
+Exibição do ranking na interface do jogo.
+
+Melhorias de Interface
+Criação de barra superior responsiva.
+Reorganização dos elementos:
+Botão Voltar
+Ranking
+HUD (movimentos, tempo e pontuação)
+Ajustes para melhorar a experiência em dispositivos móveis.
+
+Testes
+Criados métodos rápidos para testar a tela de vitória sem precisar completar todas as cartas.
+Utilização do Console do navegador para acelerar os testes durante o desenvolvimento.
+
+Problemas encontrados
+Erro "Cannot read properties of null (reading 'addEventListener')" causado por elementos ainda não carregados no DOM.
+Sobreposição do painel de ranking sobre o tabuleiro devido ao uso de position: fixed.
+Ajustes pendentes no alinhamento visual das cartas após a reorganização do layout.
+
+Próximos passos
+Finalizar ajustes visuais da barra superior.
+Corrigir deformação/alinhamento das cartas durante a animação de virada.
+Melhorar a responsividade em telas menores.
+Exibir mensagem especial quando um novo recorde for alcançado.
+Adicionar efeitos sonoros e animações para aumentar o engajamento.

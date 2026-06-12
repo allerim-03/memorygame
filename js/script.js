@@ -207,7 +207,19 @@ window.onload = () => {
   const backBtn = document.getElementById("back-btn");
   if (backBtn) {
     backBtn.addEventListener("click", () => {
-      window.history.back(); // volta para a página anterior
+      window.location.href = "index.html";//volta para a tela inicial do jogo index
+      //window.history.back(); // volta para a página anterior
     });
   }
 }
+
+//para testar vitoria
+document.addEventListener("keydown", (e) => {
+  if (e.key === "v") {
+    document.querySelectorAll(".memory-card").forEach(card => {
+      card.classList.add("flip");
+    });
+
+    verificarVitoria();
+  }
+});
