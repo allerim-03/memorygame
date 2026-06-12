@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/style.css">
+
+  <title>Jogo da Memória - ODS</title>
+<style>
+/* Cabeçalho do jogo */
+.game-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.game-header h1 {
+  color: #31b54c(--bright-green);
+  margin: 10px 0;
+}
+
+.game-header p {
+  color: var(--dark-blue);
+  margin: 5px 0;
+}
+
+/* Mascote Tuga */
+.tuga {
+  max-width: 150px;
+  margin-bottom: 15px;
+}
+
+/* Grade das cartas */
+.memory-game {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 6px; /* espaço menor entre as cartas */
+  justify-content: center;
+  margin: 20px;
+}
+
+/* Mantém as cartas quadradas */
+.memory-card {
+  aspect-ratio: 1 / 1;
+  max-width: 100px; /* cartas um pouco menores para caber mais na tela */
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+  cursor: pointer;
+}
+
+.memory-card.flip {
+  transform: rotateY(180deg);
+}
+
+.front, .back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  backface-visibility: hidden;
+}
+
+.front {
+  transform: rotateY(180deg);
+}
+
+.back {
+  background-color: var(--bright-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #fff;
+}
+
+.back::after {
+  content: "ODS";
+}
+
+/* Breakpoints para diferentes telas */
+
+/* Telas grandes (desktop) → até 9 colunas */
+@media (min-width: 1200px) {
+  .memory-game {
+    grid-template-columns: repeat(9, 1fr);
+  }
+  .memory-card {
+    max-width: 120px; /* cartas maiores em desktop */
+  }
+}
+
+/* Telas médias (tablet) → até 4 colunas */
+@media (max-width: 1199px) and (min-width: 768px) {
+  .memory-game {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Telas pequenas (celular) → até 2 colunas */
+@media (max-width: 767px) {
+  .memory-game {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+/* Mensagem de vitória */
+.victory {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #31b54c; /* verde sólido */
+  color: #fff;
+  text-align: center;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.victory.show {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.victory.hidden {
+  visibility: hidden; 
+  opacity: 0;
+}
+
+.victory .tuga {
+  max-width: 120px;
+  margin-bottom: 15px;
+}
+/* Botão Jogar novamente */
+.victory button {
+  margin-top: 15px;
+  padding: 12px 24px;
+  background: var(--bright-blue);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold; /* deixa em negrito */
+  transition: transform 0.2s, background 0.3s;
+}
+
+.victory button:hover {
+  background: var(--dark-blue);
+  transform: scale(1.05); /* efeito de destaque */
+}
+
+/* Botão voltar */
+#back-btn {
+  position: fixed;
+  top: 10px;
+  left: 20px;
+  background: var(--bright-blue);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+#back-btn:hover {
+  background: var(--dark-blue);
+  transform: scale(1.05);
+}
+
+/* HUD */
+#hud {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  display: flex;
+  gap: 20px;
+  font-weight: bold;
+  color: var(--dark-blue);
+  background: #f0f0f0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Destaque da pontuação */
+
+
+#score {
+  color: #ffde5a; /* amarelo dourado */
+  font-weight: bold;
+  padding: 2px 6px;
+  border: 2px solid #ffde5a;
+  border-radius: 6px;
+  background: #fffbe6; /* fundo claro para contraste */
+}
+
+
+@keyframes glow {
+  from { text-shadow: 0 0 5px #ffde5a; }
+  to { text-shadow: 0 0 15px #ffde5a; }
+}
+
+#ranking {
+  position: fixed;   /* fixa no viewport */
+  top: 70px;         /* logo abaixo do botão Voltar */
+  left: 20px;        /* canto esquerdo */
+  background: #fff8e1;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  font-weight: bold;
+  color: #444;
+  z-index: 999;      /* garante que fique acima do tabuleiro */
+  width: 180px;      /* largura fixa para não “dançar” */
+}
+#ranking h3 {
+  margin: 0 0 5px 0;
+  color: #d17f00;
+}
+
+
+#record-message {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffde5a; /* dourado para destacar */
+  animation: pulse 1s infinite;
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+ <div class="game-header">
+    <img src="../imagens/tuga.png" alt="Mascote Tuga" class="tuga">
+    <h1>Jogo da Memória</h1>
+    <p>Encontre os pares das 17 ODS!</p>
+    <div id="ranking">
+  <h3>🏆 Melhor Resultado</h3>
+  <p id="best-score">⭐ Pontuação 0</p>
+  <p id="best-time">⌛ 0s</p>
+</div>
+  </div>
+
+ 
+<!-- Botão voltar -->
+<button id="back-btn">⬅ Voltar</button>
+
+<div id="hud">
+  <span id="moves">Movimentos: 0</span>
+  <span id="timer">⌛ 0s</span>
+  <span id="score">⭐ Pontuação: 0</span>
+</div>
+
+
+</div>
+
+
+
+
+
+  <!-- espaço das cartas  -->
+  <div class="memory-game">
+    <!-- cartas ODS -->
+    <div class="memory-card" data-ods="1">
+      <img class="front" src="../imagens/ods_01_1.png" alt="ODS 1">
+      <div class="back"></div>
+    </div>
+
+    <div class="memory-card" data-ods="2">
+      <img class="front" src="../imagens/ods_02_0.png" alt="ODS 2">
+      <div class="back"></div>
+    </div>
+
+    <div class="memory-card" data-ods="3">
+      <img class="front" src="../imagens/ods_03_0.png" alt="ODS 3">
+      <div class="back"></div>
+    </div>
+
+    <div class="memory-card" data-ods="4">
+      <img class="front" src="../imagens/ods_04_0.png" alt="ODS 4">
+      <div class="back"></div>
+    </div>
+
+    <div class="memory-card" data-ods="5">
+      <img class="front" src="../imagens/ods_05_0.png" alt="ODS 5">
+      <div class="back"></div>
+    </div>
+
+<div class="memory-card" data-ods="6">
+      <img class="front" src="../imagens/ods_06_0.png" alt="ODS 6">
+      <div class="back"></div>
+    </div>
+
+    <div class="memory-card" data-ods="7">
+      <img class="front" src="../imagens/ods_07_0.png" alt="ODS 7">
+      <div class="back"></div>
+    </div>
+
+    <div class="memory-card" data-ods="8">
+      <img class="front" src="../imagens/ods_08_0.png" alt="ODS 8">
+      <div class="back"></div>
+    </div>
+
+    <div class="memory-card" data-ods="9">
+      <img class="front" src="../imagens/ods_09_0.png" alt="ODS 9">
+      <div class="back"></div>
+    </div>
+
+    <div class="memory-card" data-ods="10">
+      <img class="front" src="../imagens/ods_10_0.png" alt="ODS 10">
+      <div class="back"></div>
+    </div>
+
+    <div class="memory-card" data-ods="11">
+      <img class="front" src="../imagens/ods_11_0.png" alt="ODS 11">
+      <div class="back"></div>
+    </div>
+
+    <div class="memory-card" data-ods="12">
+      <img class="front" src="../imagens/ods_12_0.png" alt="ODS 12">
+      <div class="back"></div>
+    </div>
+
+    <div class="memory-card" data-ods="13">
+      <img class="front" src="../imagens/ods_13_0.png" alt="ODS 13">
+      <div class="back"></div>
+    </div>
+
+    <div class="memory-card" data-ods="14">
+      <img class="front" src="../imagens/ods_14_0.png" alt="ODS 14">
+      <div class="back"></div>
+    </div>
+
+    <div class="memory-card" data-ods="15">
+      <img class="front" src="../imagens/ods_15_0.png" alt="ODS 15">
+      <div class="back"></div>
+    </div>
+
+    <div class="memory-card" data-ods="16">
+      <img class="front" src="../imagens/ods_16_0.png" alt="ODS 16">
+      <div class="back"></div>
+    </div>
+
+   
+   
+    <div class="memory-card" data-ods="17">
+      <img class="front" src="../imagens/ods_17_0.png" alt="ODS 17">
+      <div class="back"></div>
+    </div>
+
+    <!-- Carta ONU -->
+    <div class="memory-card" data-ods="onu">
+      <img class="front" src="../imagens/onu.png" alt="ONU">
+      <div class="back"></div>
+    </div>
+  </div>
+
+   <script src="../js/script.js"></script>
+
+<!-- Mensagem de vitória -->
+<div id="victory-message" class="victory hidden">
+  <img src="../imagens/tuga.png" alt="Mascote Tuga" class="tuga">
+  <h2>Parabéns, você venceu!!!</h2>
+   <p id="record-message" class="hidden"> Novo recorde! O Tuga está orgulhoso de você! </p>
+   <button id="restart-btn">Jogar novamente</button>
+</div>
+
+</body>
+</html>
