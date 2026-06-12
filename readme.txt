@@ -102,3 +102,27 @@ Corrigir deformação/alinhamento das cartas durante a animação de virada.
 Melhorar a responsividade em telas menores.
 Exibir mensagem especial quando um novo recorde for alcançado.
 Adicionar efeitos sonoros e animações para aumentar o engajamento.
+
+
+## Atualização - 12/06/2026
+
+### Tela de vitória (melhorias visuais)
+- Reformulada a tela de vitória com novo estilo mais limpo e profissional.
+- Substituído fundo verde sólido por:
+  - Cartão branco com borda verde (identidade ODS)
+  - Sombra mais forte para destacar o popup
+- Adicionado fundo escurecido (overlay) para focar na mensagem de vitória.
+
+###  Experiência do usuário
+- Melhor contraste entre a tela de vitória e o jogo.
+- Destaque visual maior para a mensagem "Missão Cumprida".
+- Botão "Jogar novamente" estilizado com feedback visual ao passar o mouse.
+
+###  Correções e ajustes
+- Corrigido comportamento do botão de reinício para evitar reabertura indevida da tela de vitória.
+- Ajustado fluxo de exibição/ocultação do overlay.
+- Melhorado controle de estado do jogo após reinício.
+
+### 🎯 Melhorias gerais de UI
+- Aumentado o foco visual no modal de vitória.
+- Melhor hierarquia visual entre fundo, modal e conteúdo.

@@ -140,18 +140,44 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #31b54c; /* verde sólido */
-  color: #fff;
-  text-align: center;
+
+  background: #ffffff;
+  color: #2c3e50;
+
   padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-  z-index: 999;
+
+  border: 4px solid #31b54c;
+  border-radius: 18px;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.35),
+    0 0 0 100vmax rgba(0, 0, 0, 0.55); /* escurece o fundo */
+
+  z-index: 1000;
+
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.4s ease;
 }
 
+
+/* Titulo verde */
+.victory h2 {
+  color: #31b54c;
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.victory p {
+  color: #333;
+  font-size: 1.1rem;
+  margin: 10px 0;
+}
+
+@keyframes pop {
+  0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
 .victory.show {
   visibility: visible;
   opacity: 1;
@@ -171,21 +197,36 @@
 .victory button {
   margin-top: 15px;
   padding: 12px 24px;
-  background: var(--bright-blue);
-  color: #fff;
+
+  background: #31b54c;
+  color: white;
+
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 10px;
+
   font-size: 18px;
-  font-weight: bold; /* deixa em negrito */
+  font-weight: bold;
+
+  cursor: pointer;
   transition: transform 0.2s, background 0.3s;
 }
 
 .victory button:hover {
-  background: var(--dark-blue);
-  transform: scale(1.05); /* efeito de destaque */
+  background: #2a9d45;
+  transform: scale(1.05);/* efeito de destaque */
+}
+.overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0,0,0,0.55);
+
+  z-index: 999;
 }
 
+.overlay.hidden {
+  display: none;
+}
 /* Botão voltar */
 #back-btn {
   
@@ -276,7 +317,7 @@ color: #444;
 
 
 #record-message {
-  margin-top: 10px;
+  margin-top: 15px;
   font-size: 18px;
   font-weight: bold;
   color: #ffde5a; /* dourado para destacar */
@@ -443,9 +484,18 @@ color: #444;
    
 
 <!-- Mensagem de vitória -->
+ <div id="overlay" class="overlay hidden"></div>
 <div id="victory-message" class="victory hidden">
   <img src="../imagens/tuga.png" alt="Mascote Tuga" class="tuga">
-  <h2>Parabéns, você venceu!!!</h2>
+ 
+
+<h2> Missão Cumprida!</h2>
+
+<p>
+  Você encontrou todos os pares das ODS!
+</p>
+
+
    <p id="record-message" class="hidden"> Novo recorde! O Tuga está orgulhoso de você! </p>
    <button id="restart-btn">Jogar novamente</button>
 </div>
