@@ -61,7 +61,7 @@ const bestTime = getBestTime();
 
   document.getElementById("best-time").textContent =
     `⌛ ${bestTime}s`;
-
+}
 // Chamar ao carregar a página
 //--loadRanking();
 
@@ -113,28 +113,50 @@ const GameState = {
 const tabuleiro =
   document.querySelector(".memory-game");
 
+let tabuleiroCriado = false;
 function configurarTabuleiro() {
 
   let cartas =
     Array.from(document.querySelectorAll(".memory-card"));
 
-  // duplicar cartas
-  const novasCartas = cartas.map(carta => {
-    const clone = carta.cloneNode(true);
-    return clone;
-  });
-   novasCartas.forEach(c => tabuleiro.appendChild(c));
+  if (!tabuleiroCriado) {
 
-  // atualizar lista completa
-  cartas =
-    Array.from(document.querySelectorAll(".memory-card"));
+    const novasCartas = cartas.map(carta =>
+      carta.cloneNode(true)
+    );
 
-  // embaralhar cartas (embaralha a ordem no DOM)
+    novasCartas.forEach(c =>
+      tabuleiro.appendChild(c)
+    );
+
+    tabuleiroCriado = true;
+
+    cartas =
+      Array.from(document.querySelectorAll(".memory-card"));
+  }
+
   cartas.sort(() => Math.random() - 0.5);
 
   cartas.forEach(carta =>
     tabuleiro.appendChild(carta)
   );
+    cartas.forEach(carta => {
+
+    carta.removeEventListener(
+      "click",
+      virarCarta
+    );
+
+    carta.addEventListener(
+      "click",
+      virarCarta
+    );
+
+  });
+  
+  console.log(
+  document.querySelectorAll(".memory-card").length//teste temporário
+);
 }
 
  
@@ -334,8 +356,7 @@ function esconderVitoria() {
 
 // Adiciona evento de clique em cada carta
 // clique nas cartas
-document.querySelectorAll(".memory-card")
-  .forEach(card => card.addEventListener("click", virarCarta));
+
 
 //usuario clicando - Função para virar carta
 
@@ -490,7 +511,7 @@ document.getElementById("restart-btn")
   .addEventListener("click", reiniciarJogo);
 
 
-function reiniciarJogo() {
+function reiniciarJogos() {
 
  
   // 1. esconder vitória

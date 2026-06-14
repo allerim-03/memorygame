@@ -315,3 +315,478 @@ Novos minijogos dentro da plataforma
 
 A estrutura atual já segue um modelo modular de plataforma educacional, permitindo expansão para múltiplos jogos e integração com backend sem grandes refatorações.
 
+### Resumo das atividades de hoje (13/06/2026)
+
+#### 📁 Reorganização da estrutura do projeto
+
+O módulo do Jogo da Memória foi reorganizado para seguir uma arquitetura mais próxima da utilizada em aplicações Flask.
+
+Estrutura atual:
+
+```text
+MEMORYGAME/
+│
+├── templates/
+│   ├── index.html
+│   ├── menu.html
+│   └── memoryGame.html
+│
+├── static/
+│   ├── css/
+│   │   ├── reset.css
+│   │   ├── base.css
+│   │   ├── ui.css
+│   │   └── memory-game.css
+│   │
+│   ├── js/
+│   │   ├── gameMenu.js
+│   │   └── memory/
+│   │       └── memoryGame.js
+│   │
+│   └── imagens/
+│
+└── README.md
+```
+
+---
+
+#### 🧠 Refatoração do JavaScript (`memoryGame.js`)
+
+Foi iniciada a organização do código em blocos lógicos:
+
+##### Storage
+
+Responsável por:
+
+* Salvar recordes no `localStorage`
+* Recuperar melhor pontuação
+* Recuperar melhor tempo
+
+Funções:
+
+```js
+getBestScore()
+getBestTime()
+saveRecord()
+loadRanking()
+```
+
+---
+
+##### Estado do Jogo (GameState)
+
+Centralização das variáveis globais:
+
+```js
+const GameState = {
+  primeiraCarta,
+  segundaCarta,
+  bloqueado,
+  moves,
+  score,
+  seconds,
+  timerInterval
+}
+```
+
+Objetivo:
+
+* reduzir variáveis espalhadas pelo arquivo
+* facilitar manutenção futura
+
+---
+
+##### Tabuleiro (Board)
+
+Criação da função:
+
+```js
+configurarTabuleiro()
+```
+
+Responsável por:
+
+* duplicar cartas
+* embaralhar cartas
+* montar o tabuleiro
+
+Também foi criado o objeto:
+
+```js
+const MemoryGame = {}
+```
+
+como controlador principal do módulo.
+
+---
+
+##### Interface (UI)
+
+Separação das funções relacionadas à tela:
+
+```js
+atualizarHUD()
+atualizarTimer()
+mostrarVitoria()
+esconderVitoria()
+```
+
+Responsabilidades:
+
+* atualizar HUD
+* atualizar cronômetro
+* exibir popup de vitória
+* esconder popup
+
+---
+
+##### Mecânica das Cartas
+
+Organização da lógica de jogo:
+
+```js
+virarCarta()
+verificarPar()
+desabilitarCartas()
+desvirarCartas()
+reiniciarJogada()
+```
+
+Responsável por:
+
+* clique nas cartas
+* comparação dos pares
+* bloqueio temporário
+* atualização da pontuação
+
+---
+
+##### Sistema de Vitória
+
+Centralização da verificação:
+
+```js
+verificarVitoria()
+```
+
+Responsável por:
+
+* parar cronômetro
+* atualizar ranking
+* verificar recorde
+* exibir tela de vitória
+
+---
+
+##### Navegação e Ferramentas de Desenvolvimento
+
+Implementados:
+
+```js
+back-btn
+```
+
+para retorno ao menu.
+
+E:
+
+```js
+tecla V
+```
+
+para forçar uma vitória durante os testes.
+
+---
+
+#### 🎨 Reorganização dos CSS
+
+O CSS foi dividido por responsabilidade.
+
+##### base.css
+
+Contém:
+
+* variáveis de cores
+* tipografia
+* botões
+* cards
+* componentes genéricos
+
+---
+
+##### ui.css
+
+Contém:
+
+* HUD
+* ranking
+* botão voltar
+* barra superior
+
+---
+
+##### memory-game.css
+
+Contém:
+
+* tabuleiro
+* cartas
+* animações de flip
+* modal de vitória
+* overlay
+* responsividade
+
+---
+
+#### 📄 Ajustes nos HTML
+
+##### index.html
+
+Foi adaptado para:
+
+* seguir a estrutura Flask
+* utilizar caminhos em `/static`
+* utilizar JavaScript separado
+* redirecionar para o menu
+
+---
+
+##### menu.html
+
+Foi reorganizado para:
+
+* utilizar CSS modular
+* utilizar imagem do mascote via `/static/imagens`
+* carregar `gameMenu.js`
+
+---
+
+##### memoryGame.html
+
+Foi preparado para:
+
+* utilizar CSS modular
+* utilizar `memoryGame.js`
+* remover dependências do antigo `script.js`
+* seguir padrão Flask-ready
+
+---
+
+#### 🐛 Correções realizadas
+
+Identificados problemas de caminho de arquivos:
+
+Erro:
+
+```text
+Refused to apply style...
+MIME type text/html
+```
+
+Causa:
+
+* caminhos incorretos para CSS
+
+Também foram corrigidos:
+
+* caminhos das imagens
+* caminhos dos scripts
+* referências relativas entre templates e static
+
+---
+
+#### 📚 Documentação
+
+O README foi atualizado para incluir:
+
+* reorganização das pastas
+* criação da tela inicial (`index.html`)
+* criação da tela de menu (`menu.html`)
+* início da modularização do JavaScript
+* diagrama da arquitetura do módulo
+
+---
+### Próximo passo
+
+Preparar a migração para Flask:
+
+1. Criar `app.py`
+2. Configurar rotas
+3. Servir `templates`
+4. Servir arquivos `static`
+5. Testar o módulo do jogo funcionando dentro da aplicação Flask
+
+
+# Registro de Desenvolvimento — 14/06/2026
+
+## Objetivo do dia
+
+Finalizar a reorganização estrutural do módulo do Jogo da Memória e corrigir erros surgidos durante a refatoração para uma arquitetura compatível com Flask.
+
+---
+
+## Correções realizadas
+
+### 1. Estrutura de Arquivos
+
+Foi mantida a separação entre:
+
+* templates/
+* static/css/
+* static/js/
+* static/imagens/
+
+seguindo o padrão adotado para futura integração com Flask.
+
+---
+
+### 2. Correção de Carregamento de CSS
+
+Foi identificado o erro:
+
+Refused to apply style because its MIME type ('text/html') is not a supported stylesheet MIME type
+
+### Causa
+
+O HTML referenciava:
+
+memory-game.css
+
+enquanto o arquivo existente possuía outro nome.
+
+### Solução
+
+Padronização do nome do arquivo:
+
+memory-game.css
+
+e atualização das referências no HTML.
+
+Resultado:
+
+* CSS voltou a carregar corretamente.
+* Layout foi restaurado.
+* Responsividade voltou a funcionar.
+
+---
+
+### 3. Correção do Sistema de Duplicação de Cartas
+
+Foi identificado que a função:
+
+configurarTabuleiro()
+
+duplicava todas as cartas a cada reinício do jogo.
+
+### Problema
+
+Quantidade de cartas após reinícios:
+
+18 → 36 → 72 → 144 → 288...
+
+Isso gerava:
+
+* aumento excessivo do DOM;
+* perda de desempenho;
+* travamentos.
+
+### Solução
+
+Implementação da variável:
+
+tabuleiroCriado
+
+permitindo que a duplicação ocorra apenas uma vez durante a inicialização do jogo.
+
+Resultado:
+
+* tabuleiro permanece com 36 cartas;
+* reinícios apenas embaralham as cartas;
+* eliminação do crescimento infinito do DOM.
+
+---
+
+### 4. Correção dos Eventos de Clique
+
+Após corrigir a duplicação, foi observado que apenas as cartas originais podiam ser viradas.
+
+### Causa
+
+As cartas clonadas por:
+
+cloneNode(true)
+
+não herdavam os eventos registrados via:
+
+addEventListener()
+
+### Solução
+
+Os eventos de clique passaram a ser registrados após a criação e embaralhamento do tabuleiro.
+
+Resultado:
+
+* todas as 36 cartas respondem ao clique;
+* mecânica de pares voltou a funcionar corretamente.
+
+---
+
+### 5. Validação da Inicialização do Jogo
+
+Foram realizados testes para verificar:
+
+* carregamento do DOM;
+* presença das cartas;
+* criação do tabuleiro;
+* execução do método:
+
+MemoryGame.iniciar()
+
+Todos os componentes passaram a inicializar corretamente.
+
+---
+
+## Situação Atual
+
+Funcionalidades operacionais:
+
+* embaralhamento das cartas;
+* sistema de pares;
+* cronômetro;
+* HUD;
+* ranking local (localStorage);
+* tela de vitória;
+* botão reiniciar;
+* botão voltar;
+* responsividade do tabuleiro.
+
+---
+
+## Pendência Identificada
+
+### Sistema de Pontuação
+
+Atualmente:
+
+* cada par correto = 10 pontos;
+* total de pares = 18;
+* pontuação máxima = 180.
+
+Como todos os jogadores que completam o jogo atingem 180 pontos, a pontuação não diferencia desempenho.
+
+Próxima tarefa:
+
+reformular o cálculo de pontuação utilizando critérios como:
+
+* quantidade de movimentos;
+* tempo gasto;
+* bônus por eficiência.
+
+---
+
+## Próximos Passos
+
+* revisar fórmula de pontuação;
+* melhorar sistema de ranking;
+* preparar integração definitiva com Flask;
+* iniciar testes para apresentação da pré-banca.
