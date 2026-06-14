@@ -790,3 +790,116 @@ reformular o cálculo de pontuação utilizando critérios como:
 * melhorar sistema de ranking;
 * preparar integração definitiva com Flask;
 * iniciar testes para apresentação da pré-banca.
+
+(14/06/2026 - Atualização II)
+
+## Melhorias na Gamificação
+
+Durante os testes do sistema de ranking foi identificado um problema na lógica de pontuação.
+
+### Problema
+
+A pontuação era calculada da seguinte forma:
+
+* +10 pontos para cada par encontrado.
+
+Como o jogo possui 18 pares, todos os jogadores que completassem a partida obteriam:
+
+180 pontos
+
+Isso impedia que a pontuação representasse o desempenho real do jogador.
+
+---
+
+## Nova Fórmula de Pontuação
+
+Foi implementado um sistema baseado em eficiência:
+
+score =
+300
+
+* (moves * 2)
+* Math.floor(seconds / 5)
+
+Critérios considerados:
+
+* quantidade de movimentos realizados;
+* tempo gasto para concluir a partida.
+
+Benefícios:
+
+* diferencia jogadores mais eficientes;
+* torna o ranking mais significativo;
+* fortalece o aspecto de gamificação do projeto.
+
+Foi adicionada a função:
+
+calcularPontuacao()
+
+na camada responsável pelas regras do jogo (Game Core).
+
+---
+
+## Atualização da HUD
+
+A interface passou a atualizar a pontuação dinamicamente a partir da função:
+
+calcularPontuacao()
+
+A responsabilidade do cálculo foi mantida na camada de lógica do jogo, enquanto a HUD permanece apenas exibindo informações ao usuário.
+
+---
+
+## Expansão do Sistema de Ranking
+
+Foi iniciado o suporte ao armazenamento da melhor quantidade de movimentos.
+
+Novos recursos:
+
+* getBestMoves()
+* armazenamento de bestMoves no localStorage
+* exibição da melhor quantidade de movimentos no ranking
+
+Estrutura do ranking:
+
+🏆 Melhor Desempenho
+
+⭐ Melhor Pontuação
+🎯 Menor Quantidade de Movimentos
+⌛ Melhor Tempo
+
+---
+
+## Refatoração e Limpeza de Código
+
+Foi identificada uma duplicidade entre:
+
+* reiniciarJogo()
+* reiniciarJogos()
+
+ remoção da implementação obsoleta para reduzir redundâncias e facilitar manutenção futura.
+
+---
+
+## Situação Atual do Módulo
+
+Funcionalidades operacionais:
+
+* geração do tabuleiro;
+* duplicação controlada das cartas;
+* embaralhamento;
+* sistema de pares;
+* cronômetro;
+* HUD dinâmica;
+* ranking local;
+* sistema de pontuação baseado em eficiência;
+* tela de vitória;
+* reinicialização da partida;
+* responsividade.
+
+---
+
+## Próximos Passos
+
+* preparar documentação técnica para pré-banca;
+* iniciar adaptação definitiva para Flask.

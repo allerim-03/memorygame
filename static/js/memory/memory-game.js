@@ -26,6 +26,7 @@
 // Funções:
 // getBestScore()
 // getBestTime()
+//getBestMoves()
 // saveRecord()
 // loadRanking()
 // ======================================
@@ -41,9 +42,13 @@ function getBestTime() {
   return Number(localStorage.getItem("bestTime")) || 0;
 }
 
+function getBestMoves() {
+  return Number(localStorage.getItem("bestMoves")) || 0;
+}
 function saveRecord(score, time) {
   localStorage.setItem("bestScore", score);
   localStorage.setItem("bestTime", time);
+  localStorage.setItem("bestMoves", moves);
 }
 
 
@@ -55,12 +60,16 @@ function saveRecord(score, time) {
 function loadRanking() {
 const bestScore = getBestScore();
 const bestTime = getBestTime();
+const bestMoves = getBestMoves();
 
   document.getElementById("best-score").textContent =
     `⭐ Pontuação: ${bestScore}`;
 
   document.getElementById("best-time").textContent =
     `⌛ ${bestTime}s`;
+
+      document.getElementById("best-moves").textContent =
+    `🎯 ${bestMoves} movimentos`;
 }
 // Chamar ao carregar a página
 //--loadRanking();
@@ -69,6 +78,7 @@ const bestTime = getBestTime();
 // [FUTURO] GAME STATE
 // ======================================
 // Estado global do jogo:
+//--armazenar o estado
 //
 // primeiraCarta
 // segundaCarta
@@ -184,10 +194,28 @@ const MemoryGame = {
   mostrarVitoria() {}
 };
 
+
+// ======================================
+// [FUTURO] RESTART
+// ======================================
+//
+// botão restart
+//
+// resetar:
+// timer
+// pontuação
+// movimentos
+// cartas
+// estado do jogo
+// ======================================
+
+
+
 // REINICIAR JOGO COMPLETO
 
 function reiniciarJogo() {
 
+  // 1. esconder vitória
   // UI vitória
   const overlay = document.getElementById("overlay");
   const victory = document.getElementById("victory-message");
@@ -197,55 +225,44 @@ function reiniciarJogo() {
 
   overlay?.classList.add("hidden");
 
-
+   // 2. reset GameState
   // GAME STATE
   GameState.primeiraCarta = null;
   GameState.segundaCarta = null;
   GameState.bloqueado = false;
 
   GameState.moves = 0;
-  GameState.score = 0;
+  //GameState.score = 0;
   GameState.seconds = 0;
 
-
+  // 3. reset cronômetro
   // TIMER
   stopTimer();
   atualizarTimer();
 
-
+  // 4. reset HUD
   // HUD
   atualizarHUD();
 
-
+// 5. reset cartas
   // CARTAS
   document.querySelectorAll(".memory-card")
     .forEach(card => {
       card.classList.remove("flip");
     });
 
-
+  // 6. reembaralhar tabuleiro
   // REEMBARALHAR
   configurarTabuleiro();
 
-
+  // 7. atualizar ranking
   // RANKING
   loadRanking();
 }
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
+//botão jogar novamente restart
+document.getElementById("restart-btn")
+  .addEventListener("click", reiniciarJogo);
 
 
 // ======================================
@@ -285,6 +302,7 @@ function atualizarTimer() {
 // [FUTURO] GAME-UI.JS
 // ======================================
 // Interface visual:
+//-- mostrar informações
 //
 // atualizarHUD()
 // atualizarTimer()
@@ -302,11 +320,14 @@ function atualizarTimer() {
 
 
 function atualizarHUD() {
-  document.getElementById("moves").textContent =
-    `Movimentos: ${GameState.moves}`;
+  
+GameState.score = calcularPontuacao();
 
-  document.getElementById("score").textContent =
+document.getElementById("score").textContent =
     `⭐ Pontuação: ${GameState.score}`;
+
+document.getElementById("moves").textContent =
+    `Movimentos: ${GameState.moves}`;
 }
 
 function atualizarTimer() {
@@ -349,6 +370,8 @@ function esconderVitoria() {
 // desvirarCartas()
 // reiniciarJogada()
 // verificarVitoria()
+// calcularPontuacao ()
+//-- calcular pontuação e regras
 // ======================================
 
 // MECÂNICA DAS CARTAS
@@ -404,12 +427,11 @@ function desabilitarCartas() {
   reiniciarJogada();
 
   GameState.moves++;
-  GameState.score += 10; // +10 pontos por par correto
+ // GameState.score += 10; +10 pontos por par correto
 
   atualizarHUD();
   verificarVitoria();
 }
-
 
 //erro
 //se forem diferentes
@@ -442,7 +464,17 @@ GameState.segundaCarta = null;
 GameState.bloqueado = false;
 }
 
+// SISTEMA DE PONTUAÇÃO
 
+function calcularPontuacao() {
+
+  const score =
+    300
+    - (GameState.moves * 2)
+    - Math.floor(GameState.seconds / 5);
+
+  return Math.max(score, 0);// impede que a pontuação seja negativa
+}
 
 // SISTEMA DE VITÓRIA
 // VERIFICAR VITÓRIA
@@ -462,15 +494,28 @@ function verificarVitoria() {
     // ranking
     const bestScore = getBestScore();
     const bestTime = getBestTime() || 9999;
-
+    const bestMoves = getBestMoves() || 9999;
     // comparação correta (GameState)
-    if (
-      GameState.score > bestScore ||
-      (GameState.score === bestScore && GameState.seconds < bestTime)
-    ) {
+    
+
+  if (
+  GameState.score > bestScore ||
+
+  (
+    GameState.score === bestScore &&
+    GameState.moves < bestMoves
+  ) ||
+
+  (
+    GameState.score === bestScore &&
+    GameState.moves === bestMoves &&
+    GameState.seconds < bestTime
+  )
+) {
       saveRecord(
         GameState.score,
-        GameState.seconds
+        GameState.seconds,
+        GameState.moves
       );
     }
 
@@ -492,98 +537,6 @@ function verificarVitoria() {
     }, 50);
   }
 }
-// ======================================
-// [FUTURO] RESTART
-// ======================================
-//
-// botão restart
-//
-// resetar:
-// timer
-// pontuação
-// movimentos
-// cartas
-// estado do jogo
-// ======================================
-
-//reiniciar jogo
-document.getElementById("restart-btn")
-  .addEventListener("click", reiniciarJogo);
-
-
-function reiniciarJogos() {
-
- 
-  // 1. esconder vitória
-
-  const overlay = document.getElementById("overlay");
-  const victory = document.getElementById("victory-message");
-
-  victory.classList.remove("show");
-  victory.classList.add("hidden");
-
-  overlay?.classList.add("hidden");
-
-
-
-  // 2. reset GameState
- 
-  GameState.primeiraCarta = null;
-  GameState.segundaCarta = null;
-  GameState.bloqueado = false;
-
-  GameState.moves = 0;
-  GameState.score = 0;
-
-  GameState.seconds = 0;
-
-
- 
-  // 3. reset cronômetro
- 
-  stopTimer();
-  atualizarTimer();
-
-
-
-  // 4. reset HUD
-  
-  atualizarHUD();
-
-
- 
-  // 5. reset cartas
-
-  const cartas =
-    document.querySelectorAll(".memory-card");
-
-  cartas.forEach(card => {
-    card.classList.remove("flip");
-  });
-
-
- 
-  // 6. reembaralhar tabuleiro
-
-  const tabuleiro =
-    document.querySelector(".memory-game");
-
-  const cartasArray =
-    Array.from(cartas);
-
-  cartasArray.sort(() => Math.random() - 0.5);
-
-  cartasArray.forEach(card => {
-    tabuleiro.appendChild(card);
-  });
-
-
-
-  // 7. atualizar ranking
- 
-  loadRanking();
-}
-
 // ======================================
 // [FUTURO] NAVEGAÇÃO
 // ======================================
@@ -608,7 +561,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
-
 // ======================================
 // [FUTURO] DEV TOOLS
 // ======================================
